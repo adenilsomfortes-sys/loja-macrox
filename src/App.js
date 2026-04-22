@@ -1,6 +1,82 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+function CompareImage() {
+  const [pos, setPos] = React.useState(50);
+
+  return (
+    <div style={{ maxWidth: 820, margin: '28px auto 0' }}>
+      <div
+        style={{
+          position: 'relative',
+          borderRadius: 22,
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.35)'
+        }}
+      >
+        <img src="/sem-grafico.png" alt="Sem gráfico" style={{ width: '100%', display: 'block' }} />
+
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: `${pos}%`,
+            height: '100%',
+            overflow: 'hidden'
+          }}
+        >
+          <img src="/com-grafico.png" alt="Com gráfico" style={{ width: '100%', display: 'block' }} />
+        </div>
+
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: `${pos}%`,
+            width: 2,
+            height: '100%',
+            background: '#ffffff',
+            boxShadow: '0 0 14px rgba(255,255,255,0.9)',
+            transform: 'translateX(-1px)'
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: `${pos}%`,
+            transform: 'translate(-50%, -50%)',
+            width: 42,
+            height: 42,
+            borderRadius: '50%',
+            background: '#ffffff',
+            color: '#020617',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 900,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.35)'
+          }}
+        >
+          ↔
+        </div>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={pos}
+        onChange={(e) => setPos(Number(e.target.value))}
+        style={{ width: '100%', marginTop: 14 }}
+      />
+    </div>
+  );
+}
+
 export default function App() {
   const pixKey = '+5547996732560';
   const merchantName = 'Izaque Izaias da Silva Fo';
@@ -38,21 +114,44 @@ export default function App() {
     return payload + crc16(payload);
   };
 
-  const links = {
-    grafico: 'https://www.mediafire.com/file/vonszhckpeommmr/GRÁFICO+MASSINHA+AMD+wLnX.rar/file',
-    emulador: 'https://www.mediafire.com/file/5ofipza2hewdf8m/minha+sensibilidade+202666666666.cfg/file',
-    celular: 'https://www.mediafire.com/file/9y3fodmbuxqzk4v/sensi+mob.jpeg/file'
-  };
+  const products = [
+    {
+      id: 'grafico',
+      titulo: 'Gráfico Massinha AMD',
+      preco: 5,
+      destaque: 'Mais vendido',
+      img1: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1000&q=80',
+      img2: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=80',
+      beneficios: ['Mais estabilidade', 'Config leve', 'Melhor resposta'],
+    },
+    {
+      id: 'emulador',
+      titulo: 'Sensibilidade Emulador',
+      preco: 9.99,
+      destaque: 'Premium',
+      img1: 'https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1000&q=80',
+      img2: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=1000&q=80',
+      beneficios: ['Puxa mais capa', 'Fácil de aplicar', 'Ajuste otimizado'],
+    },
+    {
+      id: 'celular',
+      titulo: 'Sensibilidade Celular',
+      preco: 5,
+      destaque: 'Mobile',
+      img1: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1000&q=80',
+      img2: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1000&q=80',
+      beneficios: ['Boa para toque', 'Mais precisão', 'Setup rápido'],
+    }
+  ];
 
   const [cart, setCart] = React.useState([]);
-
-  const add = (nome, preco, link) => setCart([...cart, { nome, preco, link }]);
+  const add = (produto) => setCart([...cart, produto]);
   const remove = (index) => setCart(cart.filter((_, i) => i !== index));
   const total = cart.reduce((s, i) => s + i.preco, 0).toFixed(2);
   const totalNumber = Number(total);
   const pixCode = totalNumber > 0 ? buildPixPayload(totalNumber) : '';
   const qrUrl = totalNumber > 0
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixCode)}`
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(pixCode)}`
     : '';
 
   const copiarPix = async () => {
@@ -65,319 +164,259 @@ export default function App() {
     }
   };
 
-  const finalizar = () => {
-    if (cart.length) {
-      alert('Pague o QR ou copie o código Pix do valor exato do carrinho e depois envie o comprovante para receber seu produto.');
-    }
-  };
-
-  const itensMensagem = cart.length ? cart.map((i) => i.nome).join(', ') : 'Nenhum produto';
+  const itensMensagem = cart.length ? cart.map((i) => i.titulo).join(', ') : 'Nenhum produto';
   const mensagemWhats = `Oi, acabei de pagar na Loja MacroX. Produtos: ${itensMensagem}. Total: R$ ${total.replace('.', ',')}. Segue meu comprovante.`;
 
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #050505 0%, #111827 45%, #3b0a00 100%)',
-      color: '#ffffff',
-      padding: '24px',
+      background: 'radial-gradient(circle at 20% 20%, #0f172a, #020617 70%)',
+      color: '#fff',
+      fontFamily: 'Inter, Arial, sans-serif',
       position: 'relative',
-      overflow: 'hidden',
-      fontFamily: 'Arial, sans-serif'
+      overflowX: 'hidden'
     },
-    glowOne: {
+    glowTop: {
       position: 'absolute',
-      top: '-80px',
-      left: '-80px',
-      width: '300px',
-      height: '300px',
+      top: -140,
+      left: '10%',
+      width: 340,
+      height: 340,
       borderRadius: '50%',
-      background: 'rgba(255,120,0,0.18)',
-      filter: 'blur(70px)'
+      background: 'rgba(34,211,238,0.14)',
+      filter: 'blur(80px)'
     },
-    glowTwo: {
+    glowBottom: {
       position: 'absolute',
-      bottom: '-80px',
-      right: '-80px',
-      width: '300px',
-      height: '300px',
+      bottom: -120,
+      right: '8%',
+      width: 360,
+      height: 360,
       borderRadius: '50%',
-      background: 'rgba(34,211,238,0.16)',
-      filter: 'blur(70px)'
+      background: 'rgba(249,115,22,0.16)',
+      filter: 'blur(85px)'
     },
-    container: {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      position: 'relative',
-      zIndex: 2
-    },
+    wrap: { maxWidth: 1200, margin: '0 auto', padding: '24px', position: 'relative', zIndex: 2 },
+    hero: { padding: '80px 0 30px', textAlign: 'center' },
     title: {
-      textAlign: 'center',
-      color: '#22d3ee',
-      fontSize: '42px',
-      marginBottom: '8px',
-      fontWeight: 'bold',
-      textShadow: '0 0 14px rgba(34,211,238,0.45)'
+      fontSize: 'clamp(38px,6vw,70px)',
+      fontWeight: 900,
+      background: 'linear-gradient(90deg,#22d3ee,#a78bfa)',
+      WebkitBackgroundClip: 'text',
+      color: 'transparent',
+      marginBottom: 18
     },
-    subtitle: {
-      textAlign: 'center',
-      color: '#d1d5db',
-      marginBottom: '26px',
-      fontSize: '17px'
+    desc: { color: '#94a3b8', maxWidth: 700, margin: '0 auto', fontSize: 18 },
+    sectionTitle: { textAlign: 'center', fontSize: 28, fontWeight: 900, margin: '50px 0 20px' },
+    productsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 20 },
+    productCard: {
+      background: 'linear-gradient(180deg,#0f172a,#020617)',
+      borderRadius: 20,
+      overflow: 'hidden',
+      border: '1px solid rgba(255,255,255,0.05)',
+      boxShadow: '0 14px 36px rgba(0,0,0,0.28)'
     },
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap: '16px'
+    mainImg: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' },
+    hoverImg: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' },
+    productBody: { padding: 18 },
+    tag: {
+      display: 'inline-block',
+      padding: '6px 10px',
+      borderRadius: 999,
+      background: 'rgba(249,115,22,0.12)',
+      color: '#fdba74',
+      fontSize: 12,
+      fontWeight: 800,
+      marginBottom: 10
     },
-    card: {
-      background: '#1f2937',
-      border: '1px solid #374151',
-      borderRadius: '20px',
-      padding: '18px',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.25)'
-    },
-    image: {
+    productTitle: { fontSize: 22, fontWeight: 800, marginBottom: 6 },
+    price: { fontSize: 26, fontWeight: 900, color: '#22d3ee' },
+    list: { paddingLeft: 18, color: '#cbd5e1', lineHeight: 1.7, margin: '10px 0 0' },
+    addBtn: {
+      marginTop: 14,
       width: '100%',
-      height: '150px',
-      objectFit: 'cover',
-      borderRadius: '14px',
-      marginBottom: '12px'
-    },
-    cardTitle: {
-      color: '#22d3ee',
-      fontSize: '22px',
-      fontWeight: 'bold',
-      margin: '0 0 8px 0'
-    },
-    small: {
-      color: '#9ca3af',
-      marginBottom: '12px'
-    },
-    button: {
-      width: '100%',
+      padding: 12,
+      borderRadius: 12,
       border: 'none',
-      borderRadius: '14px',
-      padding: '12px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: '0.2s'
-    },
-    cyanButton: {
       background: '#22d3ee',
-      color: '#000000',
-      boxShadow: '0 0 16px rgba(34,211,238,0.35)'
+      color: '#000',
+      fontWeight: 800,
+      cursor: 'pointer'
     },
-    orangeButton: {
-      background: '#f97316',
-      color: '#000000',
-      marginBottom: '12px'
-    },
-    greenButton: {
-      background: '#22c55e',
-      color: '#000000',
-      textDecoration: 'none',
-      display: 'block',
-      textAlign: 'center'
-    },
-    sectionGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '16px',
-      marginTop: '20px'
-    },
-    box: {
-      background: '#1f2937',
-      borderRadius: '20px',
-      padding: '18px',
-      border: '1px solid #374151'
-    },
-    boxBorder: {
-      border: '1px solid #22d3ee'
-    },
-    boxTitle: {
-      color: '#22d3ee',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      marginTop: 0,
-      marginBottom: '12px'
-    },
-    pixArea: {
-      background: '#111827',
-      borderRadius: '16px',
-      padding: '14px',
-      border: '1px solid #374151',
-      marginTop: '12px',
-      marginBottom: '12px'
-    },
-    qrWrap: {
-      display: 'flex',
-      justifyContent: 'center',
-      margin: '14px 0'
-    },
-    qr: {
-      width: '224px',
-      height: '224px',
-      borderRadius: '18px',
-      border: '4px solid #22d3ee',
-      boxShadow: '0 0 18px rgba(34,211,238,0.35)',
-      background: '#ffffff'
-    },
-    mono: {
-      fontFamily: 'monospace',
-      fontSize: '12px',
-      wordBreak: 'break-all',
-      color: '#e5e7eb'
-    },
-    muted: {
-      color: '#9ca3af',
-      fontSize: '13px'
-    },
+    split: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 18, marginTop: 34 },
+    box: { background: '#020617', borderRadius: 20, padding: 20, border: '1px solid rgba(255,255,255,0.08)' },
+    boxTitle: { fontSize: 24, fontWeight: 800, marginTop: 0, marginBottom: 12 },
     cartRow: {
       display: 'flex',
       justifyContent: 'space-between',
+      gap: 12,
       alignItems: 'center',
-      gap: '10px',
-      marginBottom: '6px'
+      padding: '8px 0',
+      borderBottom: '1px solid rgba(255,255,255,0.06)'
     },
-    remove: {
-      background: 'transparent',
-      color: '#f87171',
+    removeBtn: { background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontWeight: 700 },
+    pixArea: { background: '#0b1220', borderRadius: 20, padding: 16, marginTop: 14, border: '1px solid rgba(255,255,255,0.08)' },
+    qr: {
+      width: 230,
+      height: 230,
+      borderRadius: 20,
+      background: '#fff',
+      border: '4px solid #22d3ee',
+      boxShadow: '0 0 18px rgba(34,211,238,0.3)'
+    },
+    mono: { fontFamily: 'monospace', fontSize: 12, wordBreak: 'break-all', color: '#cbd5e1' },
+    secondaryBtn: {
+      display: 'block',
+      background: 'rgba(255,255,255,0.04)',
+      color: '#fff',
+      border: '1px solid rgba(255,255,255,0.12)',
+      padding: '14px 18px',
+      borderRadius: 14,
+      fontWeight: 800,
+      textDecoration: 'none'
+    },
+    primaryBtn: {
+      background: 'linear-gradient(135deg,#22d3ee,#6366f1)',
       border: 'none',
-      cursor: 'pointer',
-      fontSize: '13px'
+      color: '#000',
+      fontWeight: 900,
+      padding: '14px 18px',
+      borderRadius: 14,
+      cursor: 'pointer'
     },
-    footer: {
-      textAlign: 'center',
-      color: '#6b7280',
-      marginTop: '24px',
-      fontSize: '14px'
-    }
+    faqItem: {
+      background: 'rgba(15,23,42,0.88)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 18,
+      padding: 18,
+      marginBottom: 12
+    },
+    reviewsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 14 },
+    review: {
+      background: 'rgba(15,23,42,0.88)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 20,
+      padding: 18,
+      color: '#dbeafe'
+    },
+    footer: { textAlign: 'center', marginTop: 50, color: '#64748b' }
   };
 
-  const Card = ({ img, titulo, nome, preco, link }) => (
-    <div style={styles.card}>
-      <img src={img} alt={nome} style={styles.image} />
-      <h2 style={styles.cardTitle}>{titulo}</h2>
-      <p>{nome}</p>
-      <p style={styles.small}>R$ {preco.toFixed(2).replace('.', ',')}</p>
-      <button
-        onClick={() => add(nome, preco, link)}
-        style={{ ...styles.button, ...styles.cyanButton }}
-      >
-        Adicionar ao Carrinho
-      </button>
-    </div>
-  );
+  const ImageHoverCard = ({ produto }) => {
+    const [hover, setHover] = React.useState(false);
+
+    return (
+      <div style={styles.productCard}>
+        <div
+          style={{ position: 'relative', height: 220 }}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          <img src={produto.img1} alt={produto.titulo} style={{ ...styles.mainImg, opacity: hover ? 0 : 1, transition: '0.4s' }} />
+          <img src={produto.img2} alt={produto.titulo} style={{ ...styles.hoverImg, opacity: hover ? 1 : 0, transition: '0.4s' }} />
+        </div>
+        <div style={styles.productBody}>
+          <span style={styles.tag}>{produto.destaque}</span>
+          <h3 style={styles.productTitle}>{produto.titulo}</h3>
+          <div style={styles.price}>R$ {produto.preco.toFixed(2).replace('.', ',')}</div>
+          <ul style={styles.list}>
+            {produto.beneficios.map((b, i) => <li key={i}>{b}</li>)}
+          </ul>
+          <button style={styles.addBtn} onClick={() => add(produto)}>Adicionar ao carrinho</button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={styles.page}>
-      <motion.div
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-      >
-        <div style={styles.glowOne} />
-        <div style={styles.glowTwo} />
-      </motion.div>
+      <div style={styles.glowTop} />
+      <div style={styles.glowBottom} />
 
-      <div style={styles.container}>
-        <motion.h1
-          animate={{ scale: [1, 1.03, 1] }}
-          transition={{ duration: 1.8, repeat: Infinity }}
-          style={styles.title}
-        >
-          🔥 Loja MacroX FF 🔥
-        </motion.h1>
+      <div style={styles.wrap}>
+        <section style={styles.hero}>
+          <motion.h1 animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 3 }} style={styles.title}>
+            Veja a diferença do gráfico
+          </motion.h1>
+          <p style={styles.desc}>Passe o mouse na imagem para comparar com e sem gráfico.</p>
+          <CompareImage />
+        </section>
 
-        <p style={styles.subtitle}>Tema Free Fire • Sensis e gráficos insanos</p>
-
-        <div style={styles.grid}>
-          <Card
-            img='https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80'
-            titulo='Produto 1'
-            nome='Gráfico Massinha AMD'
-            preco={5}
-            link={links.grafico}
-          />
-          <Card
-            img='https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80'
-            titulo='Produto 2'
-            nome='Sensibilidade Emulador'
-            preco={9.99}
-            link={links.emulador}
-          />
-          <Card
-            img='https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=800&q=80'
-            titulo='Produto 3'
-            nome='Sensibilidade Celular'
-            preco={5}
-            link={links.celular}
-          />
+        <h2 id="produtos" style={styles.sectionTitle}>Escolha seu produto</h2>
+        <div style={styles.productsGrid}>
+          {products.map((produto) => <ImageHoverCard key={produto.id} produto={produto} />)}
         </div>
 
-        <div style={styles.sectionGrid}>
-          <div style={{ ...styles.box, ...styles.boxBorder }}>
-            <h3 style={styles.boxTitle}>🛒 Carrinho Funcionando</h3>
-            <p>Itens: {cart.length}</p>
-
-            <div style={{ margin: '10px 0' }}>
-              {cart.map((i, x) => (
-                <div key={x} style={styles.cartRow}>
-                  <span>• {i.nome}</span>
-                  <button onClick={() => remove(x)} style={styles.remove}>Remover</button>
+        <div style={styles.split} id="checkout">
+          <div style={styles.box}>
+            <h3 style={styles.boxTitle}>Checkout e carrinho</h3>
+            <p style={{ color: '#cbd5e1' }}>Itens no carrinho: <strong>{cart.length}</strong></p>
+            <div style={{ marginTop: 10 }}>
+              {cart.map((item, i) => (
+                <div key={i} style={styles.cartRow}>
+                  <div>
+                    <div>{item.titulo}</div>
+                    <div style={{ color: '#67e8f9', fontWeight: 800 }}>R$ {item.preco.toFixed(2).replace('.', ',')}</div>
+                  </div>
+                  <button style={styles.removeBtn} onClick={() => remove(i)}>Remover</button>
                 </div>
               ))}
             </div>
-
-            <p>Total: R$ {total.replace('.', ',')}</p>
+            <div style={{ fontSize: 26, fontWeight: 900, marginTop: 18 }}>Total: R$ {total.replace('.', ',')}</div>
 
             <div style={styles.pixArea}>
-              <p style={{ ...styles.muted, margin: '0 0 4px 0' }}>🔐 Pagamento Pix Seguro</p>
-              <p style={{ color: '#22d3ee', fontWeight: 'bold', margin: '0 0 8px 0' }}>MacroX Pagamentos</p>
-              <p style={{ color: '#d1d5db', fontSize: '14px', marginTop: 0 }}>O QR Code muda conforme o valor do carrinho.</p>
-
+              <div style={{ color: '#67e8f9', fontWeight: 800, marginBottom: 6 }}>Pagamento Pix Seguro</div>
+              <div style={{ color: '#cbd5e1', marginBottom: 12 }}>O QR Code muda automaticamente conforme o valor do carrinho.</div>
               {totalNumber > 0 ? (
                 <>
-                  <div style={styles.qrWrap}>
-                    <img src={qrUrl} alt='QR Code Pix dinâmico' style={styles.qr} />
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
+                    <img src={qrUrl} alt="QR Pix" style={styles.qr} />
                   </div>
-                  <p style={styles.mono}>{pixCode}</p>
-                  <button onClick={copiarPix} style={{ ...styles.button, ...styles.cyanButton, marginTop: '12px' }}>
-                    Copiar código Pix
-                  </button>
+                  <div style={styles.mono}>{pixCode}</div>
+                  <button onClick={copiarPix} style={{ ...styles.primaryBtn, width: '100%', marginTop: 14 }}>Copiar código Pix</button>
                 </>
               ) : (
-                <p style={styles.muted}>Adicione um produto ao carrinho para gerar o QR do valor exato.</p>
+                <div style={{ color: '#94a3b8' }}>Adicione um produto para gerar o QR.</div>
               )}
-
-              <p style={{ ...styles.muted, marginTop: '12px' }}>
-                Após pagar, envie o comprovante para o WhatsApp: (47) 99673-2560 para receber seu produto.
-              </p>
+              <div style={{ color: '#94a3b8', fontSize: 13, marginTop: 14 }}>
+                Após pagar, envie o comprovante para o WhatsApp: (47) 99673-2560
+              </div>
             </div>
-
-            <button onClick={finalizar} style={{ ...styles.button, ...styles.orangeButton }}>
-              Pagar e Enviar Comprovante
-            </button>
 
             <a
               href={`https://wa.me/5547996732560?text=${encodeURIComponent(mensagemWhats)}`}
-              target='_blank'
-              rel='noreferrer'
-              style={{ ...styles.button, ...styles.greenButton }}
+              target="_blank"
+              rel="noreferrer"
+              style={{ ...styles.secondaryBtn, textAlign: 'center', marginTop: 14 }}
             >
-              📲 Clique aqui após pagar para receber seu produto (WhatsApp)
+              📲 Enviar comprovante no WhatsApp
             </a>
           </div>
 
-          <div style={styles.box}>
-            <h3 style={{ ...styles.boxTitle, color: '#fb923c' }}>🔥 Avaliações</h3>
-            <p>★★★★★ Muito boa, puxou capa demais!</p>
-            <p>★★★★★ Melhor sensi que já comprei.</p>
-            <p>★★★★★ Entrega rápida e confiável.</p>
+          <div>
+            <div style={styles.faqItem}>
+              <strong>Como funciona?</strong>
+              <div style={{ color: '#cbd5e1', marginTop: 8 }}>Escolha o produto, gere o Pix, pague e envie o comprovante no WhatsApp.</div>
+            </div>
+            <div style={styles.faqItem}>
+              <strong>Quando recebo?</strong>
+              <div style={{ color: '#cbd5e1', marginTop: 8 }}>Assim que o comprovante for confirmado, o arquivo é enviado.</div>
+            </div>
+            <div style={styles.faqItem}>
+              <strong>Comparador do gráfico</strong>
+              <div style={{ color: '#cbd5e1', marginTop: 8 }}>A barra do topo mostra a diferença visual entre com e sem gráfico.</div>
+            </div>
           </div>
         </div>
 
-        <p style={styles.footer}>Loja MacroX FF © • Nova Versão Insana</p>
+        <h2 style={styles.sectionTitle}>O que os clientes dizem</h2>
+        <div style={styles.reviewsGrid}>
+          <div style={styles.review}>★★★★★<br /><br />Muito boa, puxou capa demais. Layout ficou profissional e fácil de comprar.</div>
+          <div style={styles.review}>★★★★★<br /><br />A sensi de emulador ficou absurda. Atendimento rápido no WhatsApp.</div>
+          <div style={styles.review}>★★★★★<br /><br />Comprei no celular e paguei no Pix sem dificuldade.</div>
+        </div>
+
+        <div style={styles.footer}>Loja MacroX FF © • estilo premium atualizado</div>
       </div>
     </div>
   );
