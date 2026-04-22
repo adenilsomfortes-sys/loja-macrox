@@ -3,32 +3,79 @@ import { motion } from 'framer-motion';
 
 function CompareImage() {
   const [pos, setPos] = React.useState(50);
+  const [dragging, setDragging] = React.useState(false);
+
+  const updateFromClientX = (clientX, element) => {
+    const rect = element.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setPos(pct);
+  };
+
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    updateFromClientX(e.clientX, e.currentTarget);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
+    updateFromClientX(e.clientX, e.currentTarget);
+  };
+
+  const handleTouchStart = (e) => {
+    updateFromClientX(e.touches[0].clientX, e.currentTarget);
+  };
+
+  const handleTouchMove = (e) => {
+    updateFromClientX(e.touches[0].clientX, e.currentTarget);
+  };
+
+  React.useEffect(() => {
+    const stopDragging = () => setDragging(false);
+    window.addEventListener('mouseup', stopDragging);
+    return () => window.removeEventListener('mouseup', stopDragging);
+  }, []);
 
   return (
-    <div style={{ maxWidth: 820, margin: '28px auto 0' }}>
+    <div style={{ maxWidth: 600, margin: '16px auto 0' }}>
       <div
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         style={{
           position: 'relative',
           borderRadius: 22,
           overflow: 'hidden',
           border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.35)'
+          boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
+          cursor: 'ew-resize',
+          userSelect: 'none',
+          touchAction: 'none',
+          background: '#000'
         }}
       >
-        <img src="/sem-grafico.png" alt="Sem gráfico" style={{ width: '100%', display: 'block' }} />
+        <img
+          src="/sem-grafico.png"
+          alt="Sem gráfico"
+          draggable="false"
+          style={{ width: '100%', height: 260, objectFit: 'contain', display: 'block' }}
+        />
 
-        <div
+        <img
+          src="/com-grafico.png"
+          alt="Com gráfico"
+          draggable="false"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: `${pos}%`,
+            inset: 0,
+            width: '100%',
             height: '100%',
-            overflow: 'hidden'
+            objectFit: 'contain',
+            display: 'block',
+            clipPath: `inset(0 ${100 - pos}% 0 0)`
           }}
-        >
-          <img src="/com-grafico.png" alt="Com gráfico" style={{ width: '100%', display: 'block' }} />
-        </div>
+        />
 
         <div
           style={{
@@ -49,8 +96,8 @@ function CompareImage() {
             top: '50%',
             left: `${pos}%`,
             transform: 'translate(-50%, -50%)',
-            width: 42,
-            height: 42,
+            width: 46,
+            height: 46,
             borderRadius: '50%',
             background: '#ffffff',
             color: '#020617',
@@ -65,19 +112,15 @@ function CompareImage() {
         </div>
       </div>
 
-      <input
-        type="range"
-        min="0"
-        max="100"
-        value={pos}
-        onChange={(e) => setPos(Number(e.target.value))}
-        style={{ width: '100%', marginTop: 14 }}
-      />
+      <div style={{ color: '#94a3b8', fontSize: 13, marginTop: 10, textAlign: 'center' }}>
+        Arraste a linha para a esquerda ou direita para comparar.
+      </div>
     </div>
   );
 }
 
 export default function App() {
+  const [showCompare, setShowCompare] = React.useState(false);
   const pixKey = '+5547996732560';
   const merchantName = 'Izaque Izaias da Silva Fo';
   const merchantCity = 'SAO PAULO';
@@ -197,9 +240,9 @@ export default function App() {
       filter: 'blur(85px)'
     },
     wrap: { maxWidth: 1200, margin: '0 auto', padding: '24px', position: 'relative', zIndex: 2 },
-    hero: { padding: '80px 0 30px', textAlign: 'center' },
+    hero: { padding: '34px 0 10px', textAlign: 'center' },
     title: {
-      fontSize: 'clamp(38px,6vw,70px)',
+      fontSize: 'clamp(28px,5vw,48px)',
       fontWeight: 900,
       background: 'linear-gradient(90deg,#22d3ee,#a78bfa)',
       WebkitBackgroundClip: 'text',
@@ -299,7 +342,18 @@ export default function App() {
       padding: 18,
       color: '#dbeafe'
     },
-    footer: { textAlign: 'center', marginTop: 50, color: '#64748b' }
+    footer: { textAlign: 'center', marginTop: 30, color: '#64748b' },
+    stealthBtn: {
+      display: 'inline-block',
+      marginTop: 14,
+      background: 'rgba(255,255,255,0.04)',
+      color: '#cbd5e1',
+      border: '1px solid rgba(255,255,255,0.1)',
+      padding: '10px 14px',
+      borderRadius: 999,
+      fontWeight: 700,
+      cursor: 'pointer'
+    }
   };
 
   const ImageHoverCard = ({ produto }) => {
@@ -336,10 +390,13 @@ export default function App() {
       <div style={styles.wrap}>
         <section style={styles.hero}>
           <motion.h1 animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 3 }} style={styles.title}>
-            Veja a diferença do gráfico
+            Loja MacroX FF
           </motion.h1>
-          <p style={styles.desc}>Passe o mouse na imagem para comparar com e sem gráfico.</p>
-          <CompareImage />
+          <p style={styles.desc}>Produtos prontos, checkout rápido e envio do comprovante direto no WhatsApp.</p>
+          <button style={styles.stealthBtn} onClick={() => setShowCompare(!showCompare)}>
+            {showCompare ? 'Ocultar demonstração do gráfico' : 'Ver demonstração do gráfico'}
+          </button>
+          {showCompare && <CompareImage />}
         </section>
 
         <h2 id="produtos" style={styles.sectionTitle}>Escolha seu produto</h2>
