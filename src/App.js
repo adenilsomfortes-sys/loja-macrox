@@ -121,6 +121,7 @@ function CompareImage() {
 
 export default function App() {
   const [showCompare, setShowCompare] = React.useState(false);
+  const [activeDemo, setActiveDemo] = React.useState('emulador');
   const pixKey = '+5547996732560';
   const merchantName = 'Izaque Izaias da Silva Fo';
   const merchantCity = 'SAO PAULO';
@@ -401,26 +402,51 @@ export default function App() {
 
         <h2 style={styles.sectionTitle}>Demonstração</h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 20, marginBottom: 20 }}>
-          <div style={{ background: '#020617', padding: 12, borderRadius: 16 }}>
-            <div style={{ marginBottom: 8, fontWeight: 800 }}>🎮 Sensibilidade Emulador</div>
-            <iframe
-              src="https://drive.google.com/file/d/1SYKPTJ7kbPsko8C8S1wyuKjc1Zd0jQ_N/preview"
-              title="Demonstração Sensibilidade Emulador"
-              allow="autoplay"
-              style={{ width: '100%', height: 260, border: 'none', borderRadius: 12 }}
-            />
+        <div style={{ maxWidth: 520, margin: '0 auto 24px' }}>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 14 }}>
+            <button
+              onClick={() => setActiveDemo('emulador')}
+              style={{
+                ...styles.primaryBtn,
+                opacity: activeDemo === 'emulador' ? 1 : 0.45,
+                padding: '10px 14px'
+              }}
+            >
+              🎮 Emulador
+            </button>
+            <button
+              onClick={() => setActiveDemo('mobile')}
+              style={{
+                ...styles.primaryBtn,
+                opacity: activeDemo === 'mobile' ? 1 : 0.45,
+                padding: '10px 14px'
+              }}
+            >
+              📱 Mobile
+            </button>
           </div>
 
-          <div style={{ background: '#020617', padding: 12, borderRadius: 16 }}>
-            <div style={{ marginBottom: 8, fontWeight: 800 }}>📱 Sensibilidade Mobile</div>
-            <iframe
-              src="https://drive.google.com/file/d/1Lp040AWBH-ztcK7-l-vogSISExNnQZRj/preview"
-              title="Demonstração Sensibilidade Mobile"
-              allow="autoplay"
-              style={{ width: '100%', height: 260, border: 'none', borderRadius: 12 }}
-            />
-          </div>
+          <motion.div
+            key={activeDemo}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            style={{ background: '#020617', padding: 12, borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            <div style={{ marginBottom: 8, fontWeight: 800 }}>
+              {activeDemo === 'emulador' ? '🎮 Sensibilidade Emulador' : '📱 Sensibilidade Mobile'}
+            </div>
+            <div style={{ position: 'relative', width: '100%', paddingTop: '100%', borderRadius: 12, overflow: 'hidden' }}>
+              <iframe
+                src={activeDemo === 'emulador'
+                  ? 'https://drive.google.com/file/d/1SYKPTJ7kbPsko8C8S1wyuKjc1Zd0jQ_N/preview?autoplay=1&mute=1'
+                  : 'https://drive.google.com/file/d/1Lp040AWBH-ztcK7-l-vogSISExNnQZRj/preview?autoplay=1&mute=1'}
+                title={activeDemo === 'emulador' ? 'Demonstração Sensibilidade Emulador' : 'Demonstração Sensibilidade Mobile'}
+                allow="autoplay"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              />
+            </div>
+          </motion.div>
         </div>
 
         <h2 id="produtos" style={styles.sectionTitle}>Escolha seu produto</h2>
