@@ -439,8 +439,8 @@ export default function App() {
             <div style={{ position: 'relative', width: '100%', paddingTop: '100%', borderRadius: 12, overflow: 'hidden' }}>
               <iframe
                 src={activeDemo === 'emulador'
-                  ? 'https://drive.google.com/file/d/1SYKPTJ7kbPsko8C8S1wyuKjc1Zd0jQ_N/preview?autoplay=1&mute=1'
-                  : 'https://drive.google.com/file/d/1Lp040AWBH-ztcK7-l-vogSISExNnQZRj/preview?autoplay=1&mute=1'}
+                  ? 'https://drive.google.com/file/d/1SYKPTJ7kbPsko8C8S1wyuKjc1Zd0jQ_N/preview'
+                  : 'https://drive.google.com/file/d/1Lp040AWBH-ztcK7-l-vogSISExNnQZRj/preview'}
                 title={activeDemo === 'emulador' ? 'Demonstração Sensibilidade Emulador' : 'Demonstração Sensibilidade Mobile'}
                 allow="autoplay"
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
