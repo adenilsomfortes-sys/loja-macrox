@@ -399,6 +399,30 @@ export default function App() {
           {showCompare && <CompareImage />}
         </section>
 
+        <h2 style={styles.sectionTitle}>Demonstração</h2>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 20, marginBottom: 20 }}>
+          <div style={{ background: '#020617', padding: 12, borderRadius: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 800 }}>🎮 Sensibilidade Emulador</div>
+            <iframe
+              src="https://drive.google.com/file/d/1SYKPTJ7kbPsko8C8S1wyuKjc1Zd0jQ_N/preview"
+              title="Demonstração Sensibilidade Emulador"
+              allow="autoplay"
+              style={{ width: '100%', height: 260, border: 'none', borderRadius: 12 }}
+            />
+          </div>
+
+          <div style={{ background: '#020617', padding: 12, borderRadius: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 800 }}>📱 Sensibilidade Mobile</div>
+            <iframe
+              src="https://drive.google.com/file/d/1Lp040AWBH-ztcK7-l-vogSISExNnQZRj/preview"
+              title="Demonstração Sensibilidade Mobile"
+              allow="autoplay"
+              style={{ width: '100%', height: 260, border: 'none', borderRadius: 12 }}
+            />
+          </div>
+        </div>
+
         <h2 id="produtos" style={styles.sectionTitle}>Escolha seu produto</h2>
         <div style={styles.productsGrid}>
           {products.map((produto) => <ImageHoverCard key={produto.id} produto={produto} />)}
